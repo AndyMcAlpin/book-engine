@@ -4,16 +4,15 @@ const { signToken } = require('../utils/auth');
 
 const resolvers = {
     Query: {
-        user: async (parent, { user = null, params }) => {
-            const foundUser = await User.findOne({
-                $or: [{ _id: user ? user._id : params.id }, { username: params.username }],
-              });
+        user: async (parent, args, context) => {
+            if (context.user) {
+            const foundUser = await User.findOne({ _id: context.user._id })
+              .select('-__v - password')
+              .populate('savedBooks')
           
-              if (!foundUser) {
-                throw new AuthenticationError('Cannot find a user with this id!');  
-              }
-          
-              return { foundUser };
+              return foundUser;
+            }
+            throw new AuthenticationError('Not logged in!');
           }
     },
     Mutation: {
@@ -28,8 +27,8 @@ const resolvers = {
 
             return { token, user };
         },
-        login: async (parent, { username, email, password }) => {
-            const user = await User.findOne({ $or: [{ username: username }, { email: email }] });
+        login: async (parent, { email, password }) => {
+            const user = await User.findOne({ email });
 
             if (!user) {
                 throw new AuthenticationError('Incorrect credentials');

@@ -24,11 +24,11 @@ type User {
   }
 
 type Query {
-    user((username: String) || (_id: ID) ): User  
+    user: User  
   }
 
 type Mutation {
-    login((username: String) || (email: String), password: String!): Auth
+    login(email: String!, password: String!): Auth
     addUser(username: String!, email: String!, password: String!): Auth
     saveBook(bookId: String!, description: String!, title: String!, authors: [String], image: String, link: String): User
     deleteBook(bookId: String!): User
