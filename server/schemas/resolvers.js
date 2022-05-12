@@ -44,22 +44,22 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
-        saveBook: async (parent, { user, body }, context) => {
+        saveBook: async (parent, args, context) => {
             if (context.user) {
                 const updatedUser = await User.findOneAndUpdate(
-                  { _id: user._id },
-                  { $addToSet: { savedBooks: body } },
-                  { new: true }
+                  { _id: context.user._id },
+                  { $push: { savedBooks: { ...args } } },
+                  { new: true, runValidators: true }
                 );
                 return updatedUser;
             } 
             throw new AuthenticationError('Something went wrong!');
         },
-        deleteBook: async (parent, { user, params }, context) => {
+        deleteBook: async (parent, { bookId }, context) => {
             if (context.user) {
                 const updatedUser = await User.findOneAndUpdate(
-                  { _id: user._id },
-                  { $pull: { savedBooks: { bookId: params.bookId } } },
+                  { _id: context.user._id },
+                  { $pull: { savedBooks: { bookId: bookId } } },
                   { new: true }
                 );
                 return updatedUser;
