@@ -58,11 +58,14 @@ const SearchBooks = () => {
 
   // create function to handle saving a book to our database
   const handleSaveBook = async (bookId) => {
+    console.log(Auth.getProfile("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJuYW1lIjoiMTIzIiwiZW1haWwiOiJBbmRyZXdNY0FscGluQGdtYWlsLmNvbSIsIl9pZCI6IjYyODJiM2U4Y2E3NjQyNDE5MGIxMTkzNCJ9LCJpYXQiOjE2NTI3NDMzNTUsImV4cCI6MTY1Mjc1MDU1NX0.RU9IPgb7D106rU_xf8Q2s2YZMeehoQ1P1ebp0fqioyQ"))
+    
     // find the book in `searchedBooks` state by the matching id
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
 
     // get token
     const token = Auth.loggedIn() ? Auth.getToken() : null;
+    console.log(token);
 
     if (!token) {
       return false;

@@ -1,19 +1,19 @@
-const { User, Book } = require('../models');
+const { User } = require('../models');
 const { AuthenticationError } = require('apollo-server-express');
 const { signToken } = require('../utils/auth');
 
 const resolvers = {
     Query: {
-        me: async (parent, args, context) => {
+        user: async (parent, args, context) => {
             if (context.user) {
             const foundUser = await User.findOne({ _id: context.user._id })
-              .select('-__v - password')
-              .populate('savedBooks')
-          
-              return foundUser;
+                .select('-__v - password')
+                .populate('savedBooks')
+                
+                return foundUser;
             }
             throw new AuthenticationError('Not logged in!');
-          }
+        }
     },
     Mutation: {
         addUser: async (parent, args) => {
@@ -44,22 +44,24 @@ const resolvers = {
             return { token, user };
         },
         saveBook: async (parent, args, context) => {
+            console.log(context.user)
             if (context.user) {
                 const updatedUser = await User.findOneAndUpdate(
-                  { _id: context.user._id },
-                  { $push: { savedBooks: { ...args } } },
-                  { new: true }
+                    { _id: context.user._id },
+                    { $push: { savedBooks: { ...args } } },
+                    { new: true }
                 );
                 return updatedUser;
             } 
+            
             throw new AuthenticationError('Something went wrong!');
         },
         deleteBook: async (parent, { bookId }, context) => {
             if (context.user) {
                 const updatedUser = await User.findOneAndUpdate(
-                  { _id: context.user._id },
-                  { $pull: { savedBooks: { bookId: bookId } } },
-                  { new: true }
+                    { _id: context.user._id },
+                    { $pull: { savedBooks: { bookId: bookId } } },
+                    { new: true }
                 );
                 return updatedUser;
             } 
